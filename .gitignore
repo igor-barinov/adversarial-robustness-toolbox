@@ -95,6 +95,7 @@ ENV/
 # ignore pictures
 *.jpg
 demo/pics/*
+examples/img/
 
 # ignore local config
 *config.ini
