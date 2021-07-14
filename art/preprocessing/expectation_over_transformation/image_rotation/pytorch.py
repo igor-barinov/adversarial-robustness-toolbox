@@ -19,13 +19,24 @@
 This module implements Expectation over Transformation preprocessing for image rotation in PyTorch.
 """
 
+from typing import Optional, Tuple
+
 from art.preprocessing.expectation_over_transformation.pytorch import EoTPyTorch
 
 class EoTImageRotationPyTorch(EoTPyTorch):
-    def __init__() -> None:
-        pass
+    def __init__(
+        self,
+        nb_samples: int,
+        clip_values: Tuple[float, float],
+        apply_fit: bool = False,
+        apply_predict: bool = True,
+    ) -> None:
+        super.__init__(apply_fit=apply_fit, apply_predict=apply_predict, clip_values=clip_values, nb_samples=nb_samples)
+        
+        self._check_params()
 
-    def _transform(self, x, y, **kwargs):
+    def _transform(self, x: "torch.Tensor", y: Optional["torch.Tensor"], **kwargs
+    ) -> Tuple["torch.Tensor", Optional["torch.Tensor"]]:
         pass
 
     def _check_params(self) -> None:
