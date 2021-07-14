@@ -213,7 +213,7 @@ if __name__ == "__main__":
             "learning_rate": 1.0,
             "max_iter": 5000,
             "batch_size": 1,
-            "image_file": "banner-diverse-group-of-people-2.jpg",
+            "image_file": "img/banner-diverse-group-of-people-2.jpg",
             "resume": False,
             "path": "xp/",
         }
@@ -232,6 +232,9 @@ if __name__ == "__main__":
     )
 
     image_1 = cv2.imread(config["image_file"])
+    if image_1 == None:
+        raise Exception("Could not load image specified in config: \"{}\"".format(config["image_file"]))
+
     image_1 = cv2.cvtColor(image_1, cv2.COLOR_BGR2RGB)  # Convert to RGB
     image_1 = cv2.resize(image_1, dsize=(image_1.shape[1], image_1.shape[0]), interpolation=cv2.INTER_CUBIC)
 
