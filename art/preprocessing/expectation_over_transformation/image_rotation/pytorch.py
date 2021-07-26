@@ -24,6 +24,14 @@ from typing import Optional, Tuple
 from art.preprocessing.expectation_over_transformation.pytorch import EoTPyTorch
 
 class EoTImageRotationPyTorch(EoTPyTorch):
+    """
+    This module implements Expectation over Transformation preprocessing for image rotation in PyTorch.
+    """
+
+    params = ["nb_samples", "angles", "clip_values", "label_type"]
+
+    label_types = ["classification"]
+
     def __init__(
         self,
         nb_samples: int,
@@ -48,7 +56,6 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         super.__init__(apply_fit=apply_fit, apply_predict=apply_predict, clip_values=clip_values, nb_samples=nb_samples)
         
         self.angles = angles
-        self.angles_range = (-angles, angles) if isinstance(angles, (int, float)) else angles
         self.label_type = label_type
         self._check_params()
 
@@ -70,4 +77,22 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         return x_preprocess, y
 
     def _check_params(self) -> None:
-        pass
+        
+        # pylint: disable=R0916
+        if not isinstance(self.angles, (int, float, tuple)) or (
+            isinstance(self.angles, tuple)
+            and (
+                len(self.angles) != 2
+                or not isinstance(self.angles[0], (int, float))
+                or not isinstance(self.angles[1], (int, float))
+                or self.angles[0] > self.angles[1]
+            )
+        ):
+            raise ValueError("The range of angles must be a float in the range (0.0, 180.0].")
+
+        if self.label_type not in self.label_types:
+            raise ValueError(
+                "The input for label_type needs to be one of {}, currently receiving `{}`.".format(
+                    self.label_types, self.label_type
+                )
+            )
