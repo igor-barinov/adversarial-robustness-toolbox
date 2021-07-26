@@ -54,7 +54,20 @@ class EoTImageRotationPyTorch(EoTPyTorch):
 
     def _transform(self, x: "torch.Tensor", y: Optional["torch.Tensor"], **kwargs
     ) -> Tuple["torch.Tensor", Optional["torch.Tensor"]]:
-        pass
+        """
+        Transformation of an input image and its label by randomly sampled rotation.
+
+        :param x: Input samples.
+        :param y: Label of the samples `x`.
+        :return: Transformed samples and labels.
+        """
+        import torch
+        import torchvision.transforms as T
+
+        rotater = T.RandomRotation(degrees=self.angles)
+        x_preprocess = rotater(x)
+        x_preprocess = torch.clamp(input=x_preprocess, min=self.clip_values[0], max=self.clip_values[1])
+        return x_preprocess, y
 
     def _check_params(self) -> None:
         pass
