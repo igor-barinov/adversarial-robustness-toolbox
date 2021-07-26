@@ -28,11 +28,28 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         self,
         nb_samples: int,
         clip_values: Tuple[float, float],
+        angles: Union[float, Tuple[float, float]] = 45.0,
+        label_type: str = 'classification',
         apply_fit: bool = False,
         apply_predict: bool = True,
     ) -> None:
+        """
+        Create an instance of EoTImageRotationPyTorch.
+
+        :param nb_samples: Number of random samples per input sample.
+        :param clip_values: Tuple of the form `(min, max)` representing the minimum and maximum values allowed
+                            for features.
+        :param angles: A positive scalar angle in degrees defining the uniform sampling range from negative to
+                       positive angles_range.
+        :param label_type: String defining the type of labels. Currently supported: `classification`
+        :param apply_fit: True if applied during fitting/training.
+        :param apply_predict: True if applied during predicting.
+        """
         super.__init__(apply_fit=apply_fit, apply_predict=apply_predict, clip_values=clip_values, nb_samples=nb_samples)
         
+        self.angles = angles
+        self.angles_range = (-angles, angles) if isinstance(angles, (int, float)) else angles
+        self.label_type = label_type
         self._check_params()
 
     def _transform(self, x: "torch.Tensor", y: Optional["torch.Tensor"], **kwargs
