@@ -30,7 +30,7 @@ class EoTImageRotationPyTorch(EoTPyTorch):
 
     params = ["nb_samples", "angles", "clip_values", "label_type"]
 
-    label_types = ["classification"]
+    label_types = ["classification", "object_detection"]
 
     def __init__(
         self,
@@ -71,9 +71,13 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         import torch
         import torchvision.transforms as T
 
-        rotater = T.RandomRotation(degrees=self.angles)
-        x_preprocess = rotater(x)
-        x_preprocess = torch.clamp(input=x_preprocess, min=self.clip_values[0], max=self.clip_values[1])
+        if self.label_type == "classification":
+            rotater = T.RandomRotation(degrees=self.angles)
+            x_preprocess = rotater(x)
+            x_preprocess = torch.clamp(input=x_preprocess, min=self.clip_values[0], max=self.clip_values[1])
+        elif self.label_type == "object_detection":
+
+        
         return x_preprocess, y
 
     def _check_params(self) -> None:
