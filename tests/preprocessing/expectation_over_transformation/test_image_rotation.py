@@ -21,6 +21,7 @@ import numpy as np
 import pytest
 
 from art.preprocessing.expectation_over_transformation.image_rotation.tensorflow import EoTImageRotationTensorFlow
+from art.preprocessing.expectation_over_transformation.image_rotation.pytorch import EoTImageRotationPyTorch
 from tests.utils import ARTTestException
 
 logger = logging.getLogger(__name__)
@@ -86,3 +87,58 @@ def test_eot_image_rotation_classification_tensorflow_v2(art_warning, fix_get_mn
 
     except ARTTestException as e:
         art_warning(e)
+
+@pytest.mark.only_with_platform("pytorch")
+def test_eot_image_rotation_classification_pytorch(art_warning, fix_get_mnist_subset):
+    try:
+        x_train_mnist, y_train_mnist, _, _ = fix_get_mnist_subset
+
+        nb_samples = 3
+
+        eot = EoTImageRotationPyTorch(
+            nb_samples=nb_samples, angles=(45.0, 45.0), clip_values=(0.0, 1.0), label_type="classification"
+        )
+        
+        x_eot, y_eot = eot.forward(x=x_train_mnist, y=y_train_mnist)
+
+        assert x_eot.shape[0] == nb_samples * x_train_mnist.shape[0]
+        assert y_eot.shape[0] == nb_samples * y_train_mnist.shape[0]
+
+        x_eot_expected = np.array(
+            [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.07058824,
+                0.3137255,
+                0.6117647,
+                0.05490196,
+                0.0,
+                0.54509807,
+                0.04313726,
+                0.13725491,
+                0.31764707,
+                0.9411765,
+                0.1764706,
+                0.0627451,
+                0.3647059,
+                0.0,
+                0.99215686,
+                0.99215686,
+                0.98039216,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
+        )
+
+        np.testing.assert_almost_equal(x_eot.numpy()[0, 14, :, 0], x_eot_expected)
+
+    except ARTTestException as e:
+        art_warning(e)
+    
