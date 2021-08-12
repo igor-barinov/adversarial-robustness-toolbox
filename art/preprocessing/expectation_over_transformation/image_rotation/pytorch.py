@@ -71,14 +71,26 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         import torch
         import torchvision.transforms as T
 
-        if self.label_type == "classification":
-            rotater = T.RandomRotation(degrees=self.angles)
-            x_preprocess = rotater(x)
-            x_preprocess = torch.clamp(input=x_preprocess, min=self.clip_values[0], max=self.clip_values[1])
-        elif self.label_type == "object_detection":
+        rotater = T.RandomRotation(degrees=self.angles)
+        x_preprocess = rotater(x)
+        x_preprocess = torch.clamp(input=x_preprocess, min=self.clip_values[0], max=self.clip_values[1])
+
+        if self.label_type == "object_detection":
+            self._transform_boxes(y)
+            
+
 
         
         return x_preprocess, y
+
+    def _transform_boxes(self, boxes: "torch.Tensor") -> "torch.Tensor":
+        # box = [x1, y1, x2, y2]
+        # x_center = x1 + x2 / 2
+        # y_center = y1 + y2 / 2
+        # box_shifted = [x1 - x_center, y1 - y_center, x2 - x_center, y2 - y_center]
+        # pt_rot(x, y, theta) = x*cos(theta) - y*sin(theta), x*sin(theta) + t*cos(theta)
+        # box 90 = pt_rot(pts in box_shifted)
+        pass
 
     def _check_params(self) -> None:
         
