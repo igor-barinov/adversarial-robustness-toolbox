@@ -84,12 +84,21 @@ class EoTImageRotationPyTorch(EoTPyTorch):
         return x_preprocess, y
 
     def _transform_boxes(self, boxes: "torch.Tensor") -> "torch.Tensor":
-        # box = [x1, y1, x2, y2]
-        # x_center = x1 + x2 / 2
-        # y_center = y1 + y2 / 2
-        # box_shifted = [x1 - x_center, y1 - y_center, x2 - x_center, y2 - y_center]
-        # pt_rot(x, y, theta) = x*cos(theta) - y*sin(theta), x*sin(theta) + t*cos(theta)
-        # box 90 = pt_rot(pts in box_shifted)
+        import math
+
+        for box in boxes:
+            x_center = (box[0] + box[2]) / 2
+            y_center = (box[1] + box[3]) / 2
+            box_shifted = [
+                box[0] - x_center, 
+                box[1] - y_center,
+                box[2] - x_center,
+                box[3] - x_center
+            ]
+
+            pt_rot = lambda x, y, theta : [x*math.cos(theta) - y*sin(theta), x*sin(theta) + t*cos(theta)]
+            [x1_rot, y1_rot] = pt_rot(box_shifted[0], box_shifted[1])
+            [x2_rot, y2_rot] = pt_rot(box_shifted[2], box_shifted[3])
         pass
 
     def _check_params(self) -> None:
